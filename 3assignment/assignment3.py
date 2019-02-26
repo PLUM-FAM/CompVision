@@ -1,11 +1,28 @@
 import cv2
 import numpy
 
+# helper function to increase brightness of a single frame
+def increase_brightness(src, value):
+    hsv = cv2.cvtColor(src, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
 
-imgOne = cv2.imread("four.jpg", cv2.IMREAD_COLOR)
+    lim = 255 - value
+    v[v > lim] = 255
+    v[v <= lim] += value
+
+    final_hsv = cv2.merge((h, s, v))
+    src = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+    return src
+
+
+
+imgOne = cv2.imread("one.jpg", cv2.IMREAD_COLOR)
 cv2.imshow("img", imgOne)
 
 #Technique 1:
+
+#increase brightness first?
+imgOne= increase_brightness(imgOne,70)
 
 
 #guassian blur (seems to work better) *** 2 blurs works well for img1, 2nd 5x5 mask blur sort of messes up images 3 and 4
@@ -15,10 +32,6 @@ blurOne = cv2.GaussianBlur(blurOne,(3,3),0)
 
 #possibly dialating and eroding first
 kernel = numpy.ones((5,5),numpy.uint8)
-#dialate
-#blurOne = cv2.dilate(blurOne,kernel,iterations = 2)
-#erode
-#edgesOne = cv2.erode(blurOne,kernel,iterations = 2)
 
 #canny edge detection
 edgesOne = cv2.Canny(blurOne,5,150)
