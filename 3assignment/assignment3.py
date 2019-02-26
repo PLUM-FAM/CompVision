@@ -16,13 +16,13 @@ def increase_brightness(src, value):
 
 
 
-imgOne = cv2.imread("one.jpg", cv2.IMREAD_COLOR)
+imgOne = cv2.imread("four.jpg", cv2.IMREAD_COLOR)
 cv2.imshow("img", imgOne)
 
 #Technique 1:
 
 #increase brightness first?
-imgOne= increase_brightness(imgOne,70)
+imgOne= increase_brightness(imgOne,70) #70
 
 
 #guassian blur (seems to work better) *** 2 blurs works well for img1, 2nd 5x5 mask blur sort of messes up images 3 and 4
@@ -39,9 +39,12 @@ edgesOne = cv2.Canny(blurOne,5,150)
 cv2.imshow("canny edges", edgesOne)
 
 #finding clircles 
-#started with circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=30,minRadius=0,maxRadius=0)
+#initally started with: circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=30,minRadius=0,maxRadius=0)
 #parameters here: https://docs.opencv.org/3.1.0/dd/d1a/group__imgproc__feature.html#ga47849c3be0d0406ad3ca45db65a25d2d
-circles = cv2.HoughCircles(edgesOne,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=20,minRadius=20,maxRadius=40) #leave max radius at 40 (perfect for img 4)
+circles = cv2.HoughCircles(edgesOne,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=25,minRadius=10,maxRadius=40)
+#min radius for houghCircles has to be a max of 13, any higher and img1 wont detect
+#param 2 = 20 initially, but working better for all images at 25
+
 circles = numpy.uint16(numpy.around(circles))
 
 for i in circles[0,:]:
