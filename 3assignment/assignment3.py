@@ -31,7 +31,10 @@ def onClick(event, x, y, flags, param):
 whichImage = raw_input("Please enter a filename: ")
 imgOne = cv2.imread(whichImage, cv2.IMREAD_COLOR)
 
-cv2.setMouseCallback('img', onClick)
+cv2.imshow("OG",imgOne)
+
+
+
 
 # increase brightness first
 imgOne = increase_brightness(imgOne, 70) #70
@@ -45,11 +48,10 @@ kernel = numpy.ones((5, 5), numpy.uint8)
 
 # canny edge detection
 edgesOne = cv2.Canny(blurOne, 5, 150)
-
 # finding circles 
 # initally started with: circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=30,minRadius=0,maxRadius=0)
 
-circles = cv2.HoughCircles(edgesOne, cv2.HOUGH_GRADIENT, 1, 20, param1=50, param2=25, minRadius=10, maxRadius=40)
+circles = cv2.HoughCircles(edgesOne, cv2.HOUGH_GRADIENT, 1, 20, param1=50, param2=20, minRadius=6, maxRadius=20)
 
 # min radius for houghCircles has to be a max of 13, any higher and img1 wont detect
 # param 2 = 20 initially, but working better for all images at 25
@@ -76,8 +78,10 @@ for img in listOfCircleImages:
     count += 1
     currentCircle = circles[0,count-1]
   
+    cv2.circle(edgesOne, (currentCircle[0], currentCircle[1]), currentCircle[2]-5, (255, 255, 255), -1) #DEBUG draw circles over edges
+
     # check blue
-    if(int(rgb_data[0]) in range(250, 256) and int(rgb_data[1]) in range(155, 216) and int(rgb_data[2]) in range(0, 20)):
+    if(int(rgb_data[0]) in range(250, 256) and int(rgb_data[1]) in range(155, 239) and int(rgb_data[2]) in range(0, 20)):
         blueCount += 1
         cv2.circle(imgOne, (currentCircle[0], currentCircle[1]), currentCircle[2], (255, 180, 10), -1)
     # check orange
@@ -93,7 +97,7 @@ for img in listOfCircleImages:
         yellowCount += 1
         cv2.circle(imgOne,(currentCircle[0], currentCircle[1]),int(currentCircle[2]),(0,255,255),-1)
     # check green
-    elif(int(rgb_data[0]) in range(70, 191) and int(rgb_data[1]) in range(98, 256) and int(rgb_data[2]) in range(0, 15)):
+    elif(int(rgb_data[0]) in range(70, 250) and int(rgb_data[1]) in range(98, 256) and int(rgb_data[2]) in range(0, 50)):
         greenCount += 1
         cv2.circle(imgOne, (currentCircle[0], currentCircle[1]), currentCircle[2], (80, 180, 0), -1)
     # check brown
@@ -115,6 +119,20 @@ cv2.putText(imgOne,("Brown: " + str(brownCount)), (10, textY + 120), font, 0.75,
 cv2.putText(imgOne,("Orange: " + str(orangeCount)), (10, textY + 150), font, 0.75, (255, 255, 255), 2, cv2.LINE_AA)
 
 cv2.imshow("img", imgOne)
+cv2.setMouseCallback('img', onClick)
+
+
+cv2.imshow("canny edges", edgesOne) #debug show canny edges and circles overlayed on them.
+
+print(yellowCount, " yellow")
+print(blueCount , " blue")
+print(greenCount , " green")
+print(redCount , " red")
+print(brownCount , " brown")
+print(orangeCount , " orange")
+print(unknownCount , " unknown")
+
+
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
